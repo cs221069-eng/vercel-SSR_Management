@@ -70,6 +70,7 @@ router.get("/login", (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
+  console.log("Login attempt for email:", req.body.email);
   const result = await apiRequest(req, "/api/auth/login/9165", {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -78,6 +79,7 @@ router.post("/login", async (req, res) => {
       password: req.body.password
     })
   });
+  console.log("Login response:", { status: result.status, ok: result.ok, message: result.data?.message });
 
   if (!result.ok) {
     const message = result.data?.message || "Login failed";

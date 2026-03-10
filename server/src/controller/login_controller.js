@@ -34,6 +34,7 @@ async function Login(req, res) {
     const { email, password } = req.body;
 
     if (!email || !password) {
+        console.log('[LOGIN] missing email or password', { hasEmail: !!email, hasPassword: !!password });
         return res.status(400).json({
             success: false,
             message: 'Email and password are required'
@@ -41,10 +42,13 @@ async function Login(req, res) {
     }
 
     try {
+        console.log('[LOGIN] attempt', { email });
         const existingAdmin = await adminModel.findOne({ email });
+        console.log('[LOGIN] admin found', { email, found: !!existingAdmin });
 
         if (existingAdmin) {
             const isAdminPasswordMatch = await bcrypt.compare(password, existingAdmin.password);
+            console.log('[LOGIN] admin password match', { email, match: isAdminPasswordMatch });
             if (!isAdminPasswordMatch) {
                 return res.status(401).json({
                     success: false,
@@ -73,6 +77,7 @@ async function Login(req, res) {
         }
 
         const existingUser = await userModel.findOne({ email });
+        console.log('[LOGIN] user found', { email, found: !!existingUser });
         if (!existingUser) {
             return res.status(404).json({
                 success: false,
@@ -81,6 +86,7 @@ async function Login(req, res) {
         }
 
         const isUserPasswordMatch = await bcrypt.compare(password, existingUser.password);
+        console.log('[LOGIN] user password match', { email, match: isUserPasswordMatch });
         if (!isUserPasswordMatch) {
             return res.status(401).json({
                 success: false,
@@ -110,6 +116,7 @@ async function Login(req, res) {
                 : '/student-dashboard-1'
         });
     } catch (err) {
+        console.error('[LOGIN] error', { email, message: err.message, stack: err.stack });
         return res.status(500).json({
             success: false,
             message: 'Failed to login',
