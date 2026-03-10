@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("../partials/head") %>
+  </head>
+  <body>
+    <% const latestProposal = data.proposalPayload?.data || null; %>
+    <% const activeRequestMeta = {
+      hasActiveRequest: Boolean(data.proposalPayload?.hasActiveRequest),
+      activeRequestTeacher: data.proposalPayload?.activeRequestTeacher || "",
+      activeRequestStatus: data.proposalPayload?.activeRequestStatus || ""
+    }; %>
+    <% const proposalStatus = latestProposal?.proposalStatus || ""; %>
+    <% const committeeStatus = latestProposal?.committeeStatus || "not_started"; %>
+    <% const statusStyles = {
+      pending: "bg-amber-100 text-amber-700 border-amber-200",
+      accepted: "bg-emerald-100 text-emerald-700 border-emerald-200",
+      rejected: "bg-red-100 text-red-700 border-red-200"
+    }; %>
+    <% const statusLabels = {
+      pending: "Pending Review",
+      accepted: "Accepted",
+      rejected: "Rejected"
+    }; %>
+    <% const committeeLabels = {
+      not_started: "Not Started",
+      pending: "Pending Committee",
+      approved: "Committee Approved",
+      rejected: "Committee Rejected"
+    }; %>
+
+    <div class="flex h-screen overflow-hidden">
+      <aside class="flex w-64 flex-col border-r border-slate-200 bg-white">
+        <div class="flex items-center gap-3 p-6">
+          <div class="rounded-lg bg-primary p-1.5 text-white">
+            <span class="material-symbols-outlined">terminal</span>
+          </div>
+          <h2 class="text-xl font-bold tracking-tight text-primary">FYP Portal</h2>
+        </div>
+        <div class="mb-6 px-4">
+          <div class="flex items-center gap-3 rounded-xl bg-slate-50 p-3">
+            <div class="h-10 w-10 overflow-hidden rounded-full bg-slate-200"></div>
+            <div class="flex min-w-0 flex-col">
+              <span class="truncate text-sm font-semibold"><%= auth?.name || "Student" %></span>
+              <span class="truncate text-xs text-slate-500">Final Year Student</span>
+            </div>
+          </div>
+        </div>
+        <nav class="flex-1 space-y-1 px-4">
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium text-slate-600 hover:bg-slate-100" href="/student-dashboard-1">
+            <span class="material-symbols-outlined text-lg">dashboard</span>
+            <span>Dashboard</span>
+          </a>
+          <a class="flex items-center gap-3 rounded-lg bg-primary px-3 py-2.5 font-medium text-white" href="/student-dashboard-2">
+            <span class="material-symbols-outlined text-lg">folder_open</span>
+            <span>Project</span>
+          </a>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium text-slate-600 hover:bg-slate-100" href="/student-dashboard-1?section=timeline">
+            <span class="material-symbols-outlined text-lg">calendar_month</span>
+            <span>Timeline</span>
+          </a>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium text-slate-600 hover:bg-slate-100" href="/student-dashboard-1?section=supervisor">
+            <span class="material-symbols-outlined text-lg">group</span>
+            <span>Supervisor</span>
+          </a>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium text-slate-600 hover:bg-slate-100" href="/student-dashboard-1?section=resources">
+            <span class="material-symbols-outlined text-lg">library_books</span>
+            <span>Resources</span>
+          </a>
+        </nav>
+        <div class="mt-auto p-4">
+          <form action="/logout" method="post">
+            <button class="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-100 py-2 font-semibold text-slate-700 transition-all hover:bg-slate-200" type="submit">
+              <span class="material-symbols-outlined text-lg">logout</span>
+              <span>Sign Out</span>
+            </button>
+          </form>
+        </div>
+      </aside>
+
+      <main class="flex flex-1 flex-col overflow-y-auto">
+        <header class="sticky top-0 z-50 flex items-center justify-between border-b border-slate-200 bg-white px-6 py-3">
+          <div class="flex items-center gap-8">
+            <div class="flex items-center gap-3 text-primary">
+              <div class="flex size-8 items-center justify-center rounded-lg bg-primary text-white">
+                <span class="material-symbols-outlined">school</span>
+              </div>
+              <h2 class="text-lg font-bold leading-tight tracking-tight text-slate-900">UniProjects</h2>
+            </div>
+          </div>
+          <div class="flex flex-1 items-center justify-end gap-4">
+            <div class="relative hidden w-full max-w-xs sm:flex">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400">search</span>
+              <input class="w-full rounded-lg border-none bg-slate-100 py-2 pl-10 pr-4 text-sm" placeholder="Search projects..." type="text" />
+            </div>
+            <button class="rounded-full p-2 text-slate-500 hover:bg-slate-100" type="button">
+              <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <div class="size-9 rounded-full border border-slate-200 bg-slate-200"></div>
+          </div>
+        </header>
+
+        <div class="mx-auto w-full max-w-5xl px-4 py-8">
+          <nav class="mb-6 flex items-center gap-2 text-sm text-slate-500">
+            <a class="transition-colors hover:text-primary" href="#">My Projects</a>
+            <span class="material-symbols-outlined text-xs">chevron_right</span>
+            <span class="font-medium text-slate-900">New Proposal</span>
+          </nav>
+
+          <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+            <div class="space-y-6 lg:col-span-2">
+              <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                <div class="border-b border-slate-100 p-6">
+                  <h1 class="text-2xl font-bold text-slate-900">Project Proposal</h1>
+                  <p class="mt-1 text-sm text-slate-500">Submit your initial idea for faculty review and supervisor assignment.</p>
+                </div>
+                <form id="student-proposal-form" class="space-y-6 p-6" enctype="multipart/form-data">
+                  <% if (activeRequestMeta.hasActiveRequest) { %>
+                    <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700">
+                      You already sent a request to <strong><%= activeRequestMeta.activeRequestTeacher || latestProposal?.supervisor || "a teacher" %></strong>. New request is allowed only if this one is rejected.
+                    </div>
+                  <% } %>
+                  <% if (error) { %>
+                    <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"><%= error %></div>
+                  <% } %>
+                  <% if (success) { %>
+                    <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700"><%= success %></div>
+                  <% } %>
+
+                  <div class="space-y-2">
+                    <label class="text-sm font-semibold text-slate-700">Project Title</label>
+                    <input class="w-full rounded-lg border border-slate-200 text-base" placeholder="e.g., AI-Driven Urban Traffic Management System" type="text" name="title" required />
+                    <p class="text-xs italic text-slate-400">Make it clear and descriptive of your primary goal.</p>
+                  </div>
+
+                  <div class="space-y-2">
+                    <label class="text-sm font-semibold text-slate-700">Abstract / Description</label>
+                    <textarea class="w-full rounded-lg border border-slate-200 text-base" placeholder="Provide a brief summary of your project objectives, methodology, and expected outcomes..." rows="6" name="description" required></textarea>
+                  </div>
+
+                  <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div class="space-y-2">
+                      <label class="text-sm font-semibold text-slate-700">Primary Domain</label>
+                      <select class="w-full rounded-lg border border-slate-200" name="Domain" required>
+                        <option value="Software Engineering">Software Engineering</option>
+                        <option value="Data Science & AI">Data Science & AI</option>
+                        <option value="Cybersecurity">Cybersecurity</option>
+                        <option value="Human-Computer Interaction">Human-Computer Interaction</option>
+                        <option value="Internet of Things">Internet of Things</option>
+                      </select>
+                    </div>
+                    <div class="space-y-2">
+                      <label class="text-sm font-semibold text-slate-700">Preferred Supervisor</label>
+                      <div class="relative">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-lg text-slate-400">person_search</span>
+                        <select class="w-full rounded-lg border border-slate-200 pl-10" name="supervisor" required>
+                          <option value="">Select a faculty member</option>
+                          <% (data.teachers || []).forEach(function(teacher) { %>
+                            <option value="<%= teacher._id %>" <%= teacher.availabilityStatus === "not_available" ? "disabled" : "" %>>
+                              <%= teacher.name %> <%= teacher.availabilityStatus === "not_available" ? "(Not Available)" : `(Slots: ${teacher.remainingSlots ?? 0})` %>
+                            </option>
+                          <% }) %>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="space-y-2">
+                    <label class="text-sm font-semibold text-slate-700">Supporting Documents (Optional)</label>
+                    <label class="group block cursor-pointer rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 p-8 text-center transition-colors hover:bg-slate-100">
+                      <span class="material-symbols-outlined text-4xl text-slate-400 transition-colors group-hover:text-primary">upload_file</span>
+                      <p class="mt-2 text-sm text-slate-600">Drag and drop your initial brief or click to browse</p>
+                      <p class="mt-1 text-xs text-slate-400">PDF, DOC, DOCX up to 10MB each</p>
+                      <input class="hidden" type="file" name="documents" multiple accept=".pdf,.doc,.docx" />
+                    </label>
+                  </div>
+
+                  <div class="flex items-center justify-end gap-3 border-t border-slate-100 pt-4">
+                    <button class="rounded-lg px-6 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100" type="button">Save as Draft</button>
+                    <button class="flex items-center gap-2 rounded-lg bg-primary px-8 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 <%= activeRequestMeta.hasActiveRequest ? 'opacity-70 cursor-not-allowed' : '' %>" type="submit" <%= activeRequestMeta.hasActiveRequest ? "disabled" : "" %>>
+                      Submit Proposal
+                      <span class="material-symbols-outlined text-sm">send</span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <div class="space-y-6">
+              <div class="rounded-xl border border-accent/20 bg-emerald-50 p-6">
+                <div class="mb-4 flex items-center gap-2 text-accent">
+                  <span class="material-symbols-outlined">lightbulb</span>
+                  <h3 class="font-bold">Submission Tips</h3>
+                </div>
+                <ul class="space-y-3 text-sm text-slate-700">
+                  <li class="flex gap-2"><span class="material-symbols-outlined text-lg text-accent">check_circle</span>Ensure your title is under 15 words.</li>
+                  <li class="flex gap-2"><span class="material-symbols-outlined text-lg text-accent">check_circle</span>Mention specific technologies you plan to use.</li>
+                  <li class="flex gap-2"><span class="material-symbols-outlined text-lg text-accent">check_circle</span>Define clear, measurable success metrics.</li>
+                  <li class="flex gap-2"><span class="material-symbols-outlined text-lg text-accent">check_circle</span>Check supervisor availability before selecting.</li>
+                </ul>
+              </div>
+
+              <div class="rounded-xl border border-slate-200 bg-white p-6">
+                <div class="mb-4 flex items-center justify-between">
+                  <h3 class="font-bold text-slate-900">Approval Process</h3>
+                  <button type="button" class="text-xs font-semibold text-primary hover:underline" onclick="window.location.reload()">Refresh</button>
+                </div>
+                <% if (latestProposal) { %>
+                  <div class="mb-4 flex items-center justify-between rounded-lg border border-slate-200 px-3 py-2">
+                    <div>
+                      <p class="text-xs text-slate-500">Latest Proposal</p>
+                      <p class="text-sm font-semibold text-slate-900"><%= latestProposal.title || "-" %></p>
+                    </div>
+                    <span class="rounded-full border px-2 py-1 text-xs font-semibold <%= statusStyles[proposalStatus] || 'bg-slate-100 text-slate-600 border-slate-200' %>">
+                      <%= statusLabels[proposalStatus] || "No Status" %>
+                    </span>
+                  </div>
+                <% } %>
+                <div class="relative space-y-6">
+                  <div class="absolute bottom-2 left-[11px] top-2 w-0.5 bg-slate-100"></div>
+                  <div class="relative flex items-start gap-4">
+                    <div class="z-10 flex size-6 items-center justify-center rounded-full text-white <%= latestProposal ? 'bg-primary' : 'bg-slate-200 text-slate-500' %>"><span class="text-[10px] font-bold">1</span></div>
+                    <div>
+                      <p class="text-sm font-bold leading-tight <%= latestProposal ? 'text-slate-900' : 'text-slate-600' %>">Draft Submission</p>
+                      <p class="text-xs text-slate-500"><%= latestProposal?.createdAt ? new Date(latestProposal.createdAt).toLocaleDateString() : "Not submitted yet" %></p>
+                    </div>
+                  </div>
+                  <div class="relative flex items-start gap-4">
+                    <div class="z-10 flex size-6 items-center justify-center rounded-full <%= proposalStatus === 'pending' ? 'bg-amber-100 text-amber-700' : (proposalStatus === 'accepted' || proposalStatus === 'rejected') ? 'bg-primary text-white' : 'bg-slate-200 text-slate-500' %>"><span class="text-[10px] font-bold">2</span></div>
+                    <div>
+                      <p class="text-sm font-bold leading-tight <%= proposalStatus ? 'text-slate-900' : 'text-slate-600' %>">Supervisor Review</p>
+                      <p class="text-xs text-slate-500">
+                        <% if (proposalStatus === "pending") { %>Waiting for teacher decision<% } %>
+                        <% if (proposalStatus === "accepted") { %>Approved on <%= latestProposal?.reviewedAt ? new Date(latestProposal.reviewedAt).toLocaleDateString() : "N/A" %><% } %>
+                        <% if (proposalStatus === "rejected") { %>Rejected on <%= latestProposal?.reviewedAt ? new Date(latestProposal.reviewedAt).toLocaleDateString() : "N/A" %><% } %>
+                        <% if (!proposalStatus) { %>Estimated 3-5 days<% } %>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="relative flex items-start gap-4">
+                    <div class="z-10 flex size-6 items-center justify-center rounded-full <%= committeeStatus === 'approved' ? 'bg-primary text-white' : committeeStatus === 'pending' ? 'bg-amber-100 text-amber-700' : committeeStatus === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-slate-200 text-slate-500' %>"><span class="text-[10px] font-bold">3</span></div>
+                    <div>
+                      <p class="text-sm font-bold leading-tight <%= committeeStatus !== 'not_started' ? 'text-slate-900' : 'text-slate-600' %>">Final Committee Approval</p>
+                      <p class="text-xs text-slate-500">
+                        <% if (committeeStatus === "not_started") { %>Starts only after teacher accepts your proposal.<% } %>
+                        <% if (committeeStatus === "pending") { %>Admin/department committee decision is pending.<% } %>
+                        <% if (committeeStatus === "approved") { %>Approved by committee on <%= latestProposal?.committeeReviewedAt ? new Date(latestProposal.committeeReviewedAt).toLocaleDateString() : "N/A" %>.<% } %>
+                        <% if (committeeStatus === "rejected") { %>Rejected by committee on <%= latestProposal?.committeeReviewedAt ? new Date(latestProposal.committeeReviewedAt).toLocaleDateString() : "N/A" %>.<% } %>
+                      </p>
+                      <% if (committeeStatus !== "not_started") { %>
+                        <p class="mt-1 text-[11px] font-semibold text-slate-600">Status: <%= committeeLabels[committeeStatus] || "Pending Committee" %></p>
+                      <% } %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rounded-xl border border-slate-200 bg-white p-6">
+                <div class="mb-4 flex items-center justify-between">
+                  <h3 class="font-bold text-slate-900">Active Supervisors</h3>
+                </div>
+                <div class="space-y-4">
+                  <% (data.teachers || []).slice(0, 2).forEach(function(teacher) { %>
+                    <div class="flex items-center gap-3">
+                      <div class="flex size-10 items-center justify-center rounded-full bg-primary/15 font-bold uppercase text-primary">
+                        <%= teacher?.name?.trim()?.charAt(0) || "T" %>
+                      </div>
+                      <div class="min-w-0">
+                        <p class="truncate text-sm font-bold text-slate-900"><%= teacher.name || "Unknown Teacher" %></p>
+                        <p class="truncate text-xs text-slate-500"><%= teacher.department || "Department not set" %></p>
+                      </div>
+                      <div class="ml-auto rounded-full px-2 py-0.5 text-[10px] font-bold <%= teacher.availabilityStatus === 'not_available' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
+                        <%= teacher.availabilityStatus === "not_available" ? "Not Available" : "Available" %>
+                      </div>
+                    </div>
+                  <% }) %>
+                  <% if (!data.teachers || data.teachers.length === 0) { %>
+                    <p class="text-sm text-slate-500">No supervisors found.</p>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

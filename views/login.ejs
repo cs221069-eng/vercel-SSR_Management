@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("partials/head") %>
+  </head>
+  <body>
+    <div class="flex min-h-screen flex-col bg-background-light font-display text-slate-900 md:flex-row">
+      <div class="relative hidden overflow-hidden bg-gradient-to-br from-primary via-[#1e3a8a] to-[#172554] p-12 md:flex md:w-1/2 md:flex-col md:items-center md:justify-center">
+        <div class="absolute left-[-10%] top-[-10%] h-64 w-64 rounded-full bg-white/5 blur-3xl"></div>
+        <div class="absolute bottom-[-5%] right-[-5%] h-96 w-96 rounded-full bg-accent/10 blur-3xl"></div>
+        <div class="relative z-10 flex flex-col items-center text-center">
+          <div class="mb-8 rounded-2xl border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-md">
+            <span class="material-symbols-outlined !text-7xl text-white">school</span>
+          </div>
+          <h1 class="mb-4 text-5xl font-black tracking-tight text-white">UniProjects</h1>
+          <p class="max-w-md text-xl font-light text-white/80">
+            Streamline your research journey. The ultimate management system for final year university projects.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex w-full flex-col items-center justify-center p-4 sm:p-8 md:w-1/2 md:p-12">
+        <div class="glass-effect w-full max-w-[460px] rounded-2xl p-6 shadow-[0_20px_50px_rgba(0,0,0,0.05)] sm:p-8 md:p-10">
+          <div class="mb-8 sm:mb-10">
+            <h3 class="mb-2 text-2xl font-bold text-slate-900 sm:text-3xl">Welcome Back</h3>
+            <p class="text-base text-slate-500">Please sign in to your project portal</p>
+          </div>
+
+          <form action="/login" method="post" class="space-y-6">
+            <% if (error) { %>
+              <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+                <%= error %>
+              </div>
+            <% } %>
+            <% if (success) { %>
+              <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+                <%= success %>
+              </div>
+            <% } %>
+            <div class="space-y-2">
+              <label class="ml-1 text-sm font-semibold tracking-wide text-slate-700">University Email</label>
+              <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 sm:py-4" placeholder="student@university.edu" type="email" name="email" required />
+            </div>
+            <div class="space-y-2">
+              <label class="ml-1 text-sm font-semibold tracking-wide text-slate-700">Password</label>
+              <input class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 sm:py-4" placeholder="password" type="password" name="password" required />
+            </div>
+            <button class="w-full rounded-xl bg-primary py-3 font-bold text-white transition-all duration-300 hover:bg-accent sm:py-4" type="submit">
+              Sign In
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

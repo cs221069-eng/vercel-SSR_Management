@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("../partials/head") %>
+  </head>
+  <body>
+    <% const dashboard = data || {}; %>
+    <% const student = dashboard.student || {}; %>
+    <% const stats = dashboard.stats || {}; %>
+    <% const pendingTaskItems = dashboard.pendingTasks || []; %>
+    <% const completedTaskItems = dashboard.completedTasks || []; %>
+    <% const activityItems = dashboard.recentActivities || []; %>
+    <% const upcomingDeadlines = dashboard.upcomingDeadlines || []; %>
+    <% const supervisor = dashboard.supervisor || {}; %>
+    <% const messages = dashboard.messages || []; %>
+    <% const resources = dashboard.resources || []; %>
+
+    <div class="flex h-screen overflow-hidden">
+      <aside class="flex w-64 flex-col border-r border-slate-200 bg-white">
+        <div class="flex items-center gap-3 p-6">
+          <div class="rounded-lg bg-primary p-1.5 text-white">
+            <span class="material-symbols-outlined">terminal</span>
+          </div>
+          <h2 class="text-xl font-bold tracking-tight text-primary">FYP Portal</h2>
+        </div>
+        <nav class="flex-1 space-y-1 px-4">
+          <a class="flex items-center gap-3 rounded-lg bg-primary px-3 py-2.5 font-medium text-white" href="/student-dashboard-1">
+            <span class="material-symbols-outlined text-lg">dashboard</span>
+            <span>Dashboard</span>
+          </a>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium text-slate-600 transition-colors hover:bg-slate-100" href="/student-dashboard-2">
+            <span class="material-symbols-outlined text-lg">folder_open</span>
+            <span>Project</span>
+          </a>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium text-slate-600 transition-colors hover:bg-slate-100" href="#timeline">
+            <span class="material-symbols-outlined text-lg">timeline</span>
+            <span>Timeline</span>
+          </a>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium text-slate-600 transition-colors hover:bg-slate-100" href="#supervisor">
+            <span class="material-symbols-outlined text-lg">group</span>
+            <span>Supervisor</span>
+          </a>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 font-medium text-slate-600 transition-colors hover:bg-slate-100" href="#resources">
+            <span class="material-symbols-outlined text-lg">library_books</span>
+            <span>Resources</span>
+          </a>
+        </nav>
+        <div class="mt-auto p-4">
+          <form action="/logout" method="post">
+            <button class="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-100 py-2 font-semibold text-slate-700 transition-all hover:bg-slate-200" type="submit">
+              <span class="material-symbols-outlined text-lg">logout</span>
+              <span>Sign Out</span>
+            </button>
+          </form>
+        </div>
+      </aside>
+
+      <main class="flex-1 overflow-y-auto p-8 space-y-8">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-3xl font-black text-slate-900">Student Dashboard</h1>
+            <p class="mt-1 text-slate-500">
+              <%= student?.name ? `Welcome ${student.name}` : "Track your full FYP workflow" %>
+            </p>
+          </div>
+          <button type="button" class="rounded-lg bg-primary px-4 py-2 font-semibold text-white" onclick="window.location.reload()">
+            Refresh
+          </button>
+        </div>
+
+        <% if (error) { %>
+          <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+            <%= error %>
+          </div>
+        <% } %>
+
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
+          <div class="rounded-xl border border-slate-200 bg-white p-6">
+            <p class="text-sm text-slate-500">Total Tasks</p>
+            <h3 class="text-2xl font-bold"><%= stats.totalTasks || 0 %></h3>
+          </div>
+          <div class="rounded-xl border border-slate-200 bg-white p-6">
+            <p class="text-sm text-slate-500">Completed</p>
+            <h3 class="text-2xl font-bold"><%= stats.completedTasks || 0 %></h3>
+          </div>
+          <div class="rounded-xl border border-slate-200 bg-white p-6">
+            <p class="text-sm text-slate-500">Pending</p>
+            <h3 class="text-2xl font-bold"><%= stats.pendingTasks || 0 %></h3>
+          </div>
+          <div class="rounded-xl border border-slate-200 bg-white p-6">
+            <p class="text-sm text-slate-500">Submissions</p>
+            <h3 class="text-2xl font-bold"><%= stats.submissions || 0 %></h3>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <div class="space-y-6 lg:col-span-2">
+            <section class="rounded-xl border border-slate-200 bg-white p-6">
+              <div class="mb-4 flex items-center justify-between">
+                <h3 class="text-lg font-bold">Tasks</h3>
+              </div>
+              <form id="student-task-form" class="mb-5 grid grid-cols-1 gap-3 md:grid-cols-4">
+                <input class="rounded-lg border border-slate-200 md:col-span-2" placeholder="Task title" name="title" required />
+                <select class="rounded-lg border border-slate-200" name="priority">
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+                <input type="date" class="rounded-lg border border-slate-200" name="dueDate" />
+                <textarea class="rounded-lg border border-slate-200 md:col-span-4" rows="2" placeholder="Task description" name="description"></textarea>
+                <button type="submit" class="rounded-lg bg-primary py-2.5 font-semibold text-white md:col-span-4">
+                  Add Task
+                </button>
+              </form>
+
+              <div class="space-y-5">
+                <div>
+                  <h4 class="mb-2 text-sm font-bold text-slate-700">Pending</h4>
+                  <div class="space-y-2">
+                    <% if (pendingTaskItems.length === 0) { %>
+                      <p class="text-sm text-slate-500">No pending tasks.</p>
+                    <% } %>
+                    <% pendingTaskItems.forEach(function(task) { %>
+                      <div class="rounded-lg border border-slate-200 p-3">
+                        <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                          <div class="min-w-0">
+                            <button type="button" class="flex items-center gap-2 text-left" data-task-toggle="<%= task._id %>">
+                              <span class="material-symbols-outlined text-base text-slate-400">expand_more</span>
+                              <p class="text-sm font-semibold"><%= task.title %></p>
+                            </button>
+                            <p class="text-xs text-slate-500">
+                              <%= task.dueDate ? `Due: ${new Date(task.dueDate).toLocaleDateString()}` : "No due date" %> | Priority: <%= task.priority %>
+                            </p>
+                          </div>
+                          <button type="button" data-task-status="<%= task._id %>" data-status="completed" class="rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700">
+                            Mark Complete
+                          </button>
+                        </div>
+                        <div class="hidden pt-3" id="task-details-<%= task._id %>">
+                          <div class="rounded-lg bg-slate-50 p-3 text-sm text-slate-700">
+                            <strong>Description:</strong>
+                            <p class="mt-1 whitespace-pre-wrap"><%= task.description || "No description provided." %></p>
+                          </div>
+                        </div>
+                      </div>
+                    <% }) %>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 class="mb-2 text-sm font-bold text-slate-700">Completed</h4>
+                  <div class="space-y-2">
+                    <% if (completedTaskItems.length === 0) { %>
+                      <p class="text-sm text-slate-500">No completed tasks yet.</p>
+                    <% } %>
+                    <% completedTaskItems.forEach(function(task) { %>
+                      <div class="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                        <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                          <div class="min-w-0">
+                            <button type="button" class="flex items-center gap-2 text-left" data-task-toggle="<%= task._id %>">
+                              <span class="material-symbols-outlined text-base text-slate-400">expand_more</span>
+                              <p class="text-sm font-semibold"><%= task.title %></p>
+                            </button>
+                            <p class="text-xs text-slate-500">
+                              Completed <%= task.completedAt ? new Date(task.completedAt).toLocaleDateString() : "" %>
+                            </p>
+                          </div>
+                          <button type="button" data-task-status="<%= task._id %>" data-status="pending" class="rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700">
+                            Move To Pending
+                          </button>
+                        </div>
+                        <div class="hidden pt-3" id="task-details-<%= task._id %>">
+                          <div class="rounded-lg bg-white p-3 text-sm text-slate-700">
+                            <strong>Description:</strong>
+                            <p class="mt-1 whitespace-pre-wrap"><%= task.description || "No description provided." %></p>
+                          </div>
+                        </div>
+                      </div>
+                    <% }) %>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="rounded-xl border border-slate-200 bg-white p-6">
+              <h3 class="mb-4 text-lg font-bold">Submit Work</h3>
+              <form id="student-work-form" class="space-y-3" enctype="multipart/form-data">
+                <input class="w-full rounded-lg border border-slate-200" placeholder="Submission title" name="title" required />
+                <textarea class="w-full rounded-lg border border-slate-200" rows="3" placeholder="Description" name="description"></textarea>
+                <input type="file" name="documents" multiple />
+                <button type="submit" class="rounded-lg bg-primary px-4 py-2.5 font-semibold text-white">
+                  Submit
+                </button>
+              </form>
+            </section>
+
+            <section id="timeline" class="rounded-xl border border-slate-200 bg-white p-6">
+              <h3 class="mb-4 text-lg font-bold">Project Timeline</h3>
+              <div class="space-y-3">
+                <% (dashboard.timeline || []).forEach(function(item) { %>
+                  <div class="rounded-lg border border-slate-200 p-3">
+                    <div class="flex items-center justify-between">
+                      <p class="font-semibold"><%= item.label %></p>
+                      <span class="text-xs uppercase text-slate-500"><%= item.status %></span>
+                    </div>
+                    <p class="text-xs text-slate-500"><%= item.description %></p>
+                    <p class="mt-1 text-xs text-slate-400"><%= item.date ? new Date(item.date).toLocaleString() : "No date yet" %></p>
+                  </div>
+                <% }) %>
+                <% if (!(dashboard.timeline || []).length) { %>
+                  <p class="text-sm text-slate-500">No timeline yet.</p>
+                <% } %>
+              </div>
+            </section>
+          </div>
+
+          <div class="space-y-6">
+            <section class="rounded-xl border border-slate-200 bg-white p-6">
+              <h3 class="mb-4 text-lg font-bold">Recent Activity</h3>
+              <div class="max-h-80 space-y-3 overflow-y-auto pr-1">
+                <% if (activityItems.length === 0) { %>
+                  <p class="text-sm text-slate-500">No activity yet.</p>
+                <% } %>
+                <% activityItems.forEach(function(activity, index) { %>
+                  <div class="rounded-lg bg-slate-50 p-3" key="<%= index %>">
+                    <p class="text-sm"><%= activity.message %></p>
+                    <p class="mt-1 text-xs text-slate-400"><%= activity.createdAt ? new Date(activity.createdAt).toLocaleString() : "" %></p>
+                  </div>
+                <% }) %>
+              </div>
+            </section>
+
+            <section class="rounded-xl border border-slate-200 bg-white p-6">
+              <h3 class="mb-4 text-lg font-bold">Upcoming Deadlines</h3>
+              <div class="space-y-3">
+                <% if (upcomingDeadlines.length === 0) { %>
+                  <p class="text-sm text-slate-500">No upcoming deadlines.</p>
+                <% } %>
+                <% upcomingDeadlines.forEach(function(deadline) { %>
+                  <div class="rounded-lg border border-slate-200 p-3">
+                    <p class="text-sm font-semibold"><%= deadline.title %></p>
+                    <p class="text-xs text-slate-500"><%= new Date(deadline.dueDate).toLocaleDateString() %> | <%= deadline.priority %></p>
+                    <% if (deadline.isOverdue) { %>
+                      <p class="text-xs font-semibold text-red-600">Overdue</p>
+                    <% } %>
+                  </div>
+                <% }) %>
+              </div>
+            </section>
+
+            <section id="supervisor" class="rounded-xl border border-slate-200 bg-white p-6">
+              <h3 class="mb-4 text-lg font-bold">Your Supervisor</h3>
+              <p class="font-semibold"><%= supervisor.name || "Not assigned yet" %></p>
+              <p class="text-xs text-slate-500"><%= supervisor.email || "-" %></p>
+              <div class="mt-4 h-[360px] overflow-y-auto pr-1">
+                <div class="space-y-2">
+                  <% if (messages.length === 0) { %>
+                    <p class="text-xs text-slate-500">No messages yet.</p>
+                  <% } %>
+                  <% messages.slice(0, 20).forEach(function(message) { %>
+                    <div class="rounded-lg border p-2 <%= message.senderRole === 'teacher' ? 'border-blue-200 bg-blue-50' : 'border-slate-200 bg-slate-50' %>">
+                      <p class="text-xs font-semibold capitalize"><%= message.senderRole %></p>
+                      <p class="text-sm"><%= message.text %></p>
+                      <p class="mt-1 text-[11px] text-slate-500"><%= message.createdAt ? new Date(message.createdAt).toLocaleString() : "" %></p>
+                    </div>
+                  <% }) %>
+                </div>
+              </div>
+              <form id="student-message-form" class="mt-4 space-y-2 border-t border-slate-100 pt-4">
+                <textarea class="w-full rounded-lg border border-slate-200" rows="3" placeholder="Write message for supervisor..." name="message"></textarea>
+                <button type="submit" class="w-full rounded-lg bg-primary py-2.5 font-semibold text-white">
+                  Send Message
+                </button>
+              </form>
+            </section>
+
+            <section id="resources" class="rounded-xl border border-slate-200 bg-white p-6">
+              <h3 class="mb-4 text-lg font-bold">Resources</h3>
+              <form id="student-resource-form" class="mb-4 space-y-2">
+                <input class="w-full rounded-lg border border-slate-200" placeholder="Resource title" name="title" required />
+                <input class="w-full rounded-lg border border-slate-200" placeholder="Resource URL" name="url" required />
+                <input class="w-full rounded-lg border border-slate-200" placeholder="Category (optional)" name="category" value="general" />
+                <button type="submit" class="w-full rounded-lg bg-slate-900 py-2.5 font-semibold text-white">
+                  Add Resource
+                </button>
+              </form>
+
+              <div class="space-y-2">
+                <% resources.forEach(function(resource) { %>
+                  <% const resourceUrl = /^https?:\/\//i.test(resource.url || "") ? resource.url : `https://${resource.url || ""}`; %>
+                  <a href="/go?url=<%= encodeURIComponent(resourceUrl) %>" target="_blank" rel="noreferrer" class="block rounded-lg border border-slate-200 p-3 hover:bg-slate-50">
+                    <p class="text-sm font-semibold"><%= resource.title %></p>
+                    <p class="text-xs text-slate-500"><%= resource.category %></p>
+                    <p class="mt-1 break-all text-xs text-blue-600"><%= resourceUrl %></p>
+                  </a>
+                <% }) %>
+                <% if (resources.length === 0) { %>
+                  <p class="text-sm text-slate-500">No resources yet.</p>
+                <% } %>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

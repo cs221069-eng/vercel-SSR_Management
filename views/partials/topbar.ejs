@@ -1,0 +1,14 @@
+<header class="topbar">
+  <div>
+    <h1><%= title %></h1>
+    <p><%= subtitle || "" %></p>
+  </div>
+  <div class="topbar-actions">
+    <% if (auth) { %>
+      <span class="tag"><%= auth.email %></span>
+    <% } %>
+    <form action="/logout" method="post">
+      <button class="button ghost" type="submit">Logout</button>
+    </form>
+  </div>
+</header>
