@@ -9,8 +9,8 @@
     <% const rows = reportData.students || []; %>
     <% const monthly = reportData.monthlyActivity || []; %>
     <% const maxMonthly = Math.max(1, ...monthly.map((m) => (m.submissions || 0) + (m.studentMessages || 0) + (m.tasksCompleted || 0))); %>
-    <div class="flex min-h-screen bg-background-light font-display text-slate-900">
-      <aside class="fixed flex h-full w-64 flex-col border-r border-slate-200 bg-white">
+    <div class="flex min-h-screen flex-col bg-background-light font-display text-slate-900 lg:flex-row">
+      <aside class="flex w-full flex-col border-b border-slate-200 bg-white lg:fixed lg:h-full lg:w-64 lg:border-b-0 lg:border-r">
         <div class="flex items-center gap-3 p-6">
           <div class="flex size-10 items-center justify-center rounded-lg bg-primary text-white">
             <span class="material-symbols-outlined">school</span>
@@ -20,11 +20,13 @@
             <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Teacher Edition</p>
           </div>
         </div>
-        <nav class="flex-1 space-y-1 px-4 py-4">
-          <a href="/teacher-dashboard-1" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-600 hover:bg-slate-50"><span class="material-symbols-outlined">dashboard</span><span>Dashboard</span></a>
-          <a href="/teacher-dashboard-2" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-600 hover:bg-slate-50"><span class="material-symbols-outlined">group</span><span>My Students</span></a>
-          <a href="/teacher-projects" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-600 hover:bg-slate-50"><span class="material-symbols-outlined">assignment</span><span>Projects</span></a>
-          <a href="/teacher-reports" class="flex items-center gap-3 rounded-lg bg-primary/10 px-3 py-2.5 font-semibold text-primary"><span class="material-symbols-outlined">assessment</span><span>Reports</span></a>
+        <nav class="flex-1 px-4 pb-4 lg:py-4 lg:pb-0">
+          <div class="flex gap-2 overflow-x-auto pb-1 lg:block lg:space-y-1 lg:overflow-visible">
+            <a href="/teacher-dashboard-1" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-600 hover:bg-slate-50 whitespace-nowrap"><span class="material-symbols-outlined">dashboard</span><span>Dashboard</span></a>
+            <a href="/teacher-dashboard-2" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-600 hover:bg-slate-50 whitespace-nowrap"><span class="material-symbols-outlined">group</span><span>My Students</span></a>
+            <a href="/teacher-projects" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-600 hover:bg-slate-50 whitespace-nowrap"><span class="material-symbols-outlined">assignment</span><span>Projects</span></a>
+            <a href="/teacher-reports" class="flex items-center gap-3 rounded-lg bg-primary/10 px-3 py-2.5 font-semibold text-primary whitespace-nowrap"><span class="material-symbols-outlined">assessment</span><span>Reports</span></a>
+          </div>
         </nav>
         <div class="mt-auto p-4">
           <form action="/logout" method="post">
@@ -33,16 +35,16 @@
         </div>
       </aside>
 
-      <main class="ml-64 flex-1">
-        <header class="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-8">
+      <main class="flex-1 lg:ml-64">
+        <header class="sticky top-0 z-10 flex flex-col gap-3 border-b border-slate-200 bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:h-16 sm:px-8 sm:py-0">
           <h1 class="text-lg font-bold">Reports</h1>
-          <div class="flex items-center gap-2">
+          <div class="flex flex-wrap items-center gap-2">
             <button type="button" onclick="window.location.reload()" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold">Refresh</button>
             <button type="button" id="export-teacher-report" class="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white">Export CSV</button>
           </div>
         </header>
 
-        <div class="space-y-6 p-8">
+        <div class="space-y-6 p-4 sm:p-6 lg:p-8">
           <% if (error) { %>
             <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"><%= error %></div>
           <% } %>

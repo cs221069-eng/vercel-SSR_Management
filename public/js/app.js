@@ -333,6 +333,26 @@ document.addEventListener("submit", async (event) => {
 });
 
 document.addEventListener("input", (event) => {
+  const fileInput = event.target.closest("[data-file-list]");
+  if (fileInput) {
+    const listId = fileInput.dataset.fileList;
+    const list = listId ? document.querySelector(`#${listId}`) : null;
+    if (!list) return;
+    const files = Array.from(fileInput.files || []);
+    if (files.length === 0) {
+      list.classList.add("hidden");
+      list.innerHTML = "";
+      return;
+    }
+    list.classList.remove("hidden");
+    list.innerHTML = files.map((file) => `
+      <li class="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2">
+        <span class="truncate text-sm font-semibold text-slate-700">${file.name}</span>
+        <span class="ml-3 text-xs text-slate-500">${Math.ceil(file.size / 1024)} KB</span>
+      </li>
+    `).join("");
+  }
+
   const search = document.querySelector("#teacher-project-search");
   const filter = document.querySelector("#teacher-project-student-filter");
 
