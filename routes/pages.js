@@ -79,7 +79,12 @@ router.post("/login", async (req, res) => {
       password: req.body.password
     })
   });
-  console.log("Login response:", { status: result.status, ok: result.ok, message: result.data?.message });
+  console.log("Login response:", {
+    status: result.status,
+    ok: result.ok,
+    contentType: result.data && typeof result.data === "string" ? "text" : "json",
+    message: result.data?.message
+  });
 
   if (!result.ok) {
     const message = result.data?.message || "Login failed";
