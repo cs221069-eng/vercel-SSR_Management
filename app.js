@@ -10,6 +10,7 @@ const userRouter = require("./server/src/router/user_routes");
 const pageRouter = require("./routes/pages");
 
 const app = express();
+app.set("trust proxy", 1);
 
 let dbReady = false;
 async function ensureDb() {
@@ -37,7 +38,6 @@ app.use("/public", express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 app.use("/api/admin", adminRouter);
-app.use("/api/auth", adminRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use(pageRouter);

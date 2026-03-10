@@ -1,5 +1,11 @@
 function getBaseUrl(req) {
-  return `${req.protocol}://${req.get("host")}`;
+  const forwarded = req.headers["x-forwarded-proto"];
+  const protocol = forwarded ? forwarded.split(",")[0].trim() : req.protocol;
+  const host = req.get("host");
+  if (process.env.NODE_ENV === "production" && protocol !== "https") {
+    return `https://${host}`;
+  }
+  return `${protocol}://${host}`;
 }
 
 async function apiRequest(req, path, options = {}) {
