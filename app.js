@@ -3,10 +3,10 @@ require("dotenv").config({ path: require("path").join(__dirname, "..", ".env") }
 const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
-const connectToDb = require("../server/src/db/db");
-const adminRouter = require("../server/src/router/admin_routes");
-const authRouter = require("../server/src/router/auth_routes");
-const userRouter = require("../server/src/router/user_routes");
+const connectToDb = require("./server/src/db/db");
+const adminRouter = require("./server/src/router/admin_routes");
+const authRouter = require("./server/src/router/auth_routes");
+const userRouter = require("./server/src/router/user_routes");
 const pageRouter = require("./routes/pages");
 
 const app = express();
